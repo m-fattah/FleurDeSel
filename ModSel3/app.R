@@ -54,7 +54,7 @@ server <- function(input, output) {
   
   output$x1Table <- renderDataTable({
     region_data <- gs_read(outputsheet, ws = worksheet())
-    datatable(region_data)
+    datatable(t(region_data))
   })
   
   #cat(file=stderr(), "entered server", "\n")
