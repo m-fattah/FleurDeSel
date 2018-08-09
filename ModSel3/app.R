@@ -5,8 +5,13 @@ library(googlesheets)
 library(DT)
 library(dplyr)
 library(datasets)
+library(gplots)
+library(plotly)
+library(heatmaply)
+library(shinyHeatmaply)
 library(condformat)
 suppressMessages(library(dplyr))
+
 
 #################################################
 # Google Sheet Preparation
@@ -38,8 +43,17 @@ ui <- fluidPage(
     
     # Show a table of statistical values
     mainPanel(
-      dataTableOutput("x1Table")
+      dataTableOutput("x1Table"),
+      #plotlyOutput("heatmap")
+      plotlyOutput("heatmapyo")
+      # {{{{{{{{{{{{{}}}}}}}}}}}}}      
+      #condformatOutput("formattedTable")
       #cat(file=stderr(), "main panel successful", "\n")
+      #      condformatOutput("x2HeatMap")
+      #plotlyOutput("heat")
+      
+      #heatmaply(region_data)
+      # {{{{{{{{{{{{{}}}}}}}}}}}}}   
     )
   )
 )
@@ -52,10 +66,37 @@ server <- function(input, output) {
     input$region
   })
   
+  
+  
   output$x1Table <- renderDataTable({
+    #output$formattedTable <- renderCondformat({
     region_data <- gs_read(outputsheet, ws = worksheet())
     datatable(t(region_data))
+    #datatable(condformat(t(region_data)) +
+    #       rule_fill_gradient(pcc)
+    #        )
+    #renderCondformat(condformat(datatable(t(region_data))))
   })
+  
+  #  output$heatmap <- renderPlotly({
+  #   region_data <- gs_read(outputsheet, ws = worksheet())
+  #    heatmaply(as.matrix(t(region_data)))
+  # })
+  
+#  output$heatmapyo <- plot_ly(z=region_data, type = "heatmap")
+  
+#  heatmap(region_data)
+ 
+  as.matrix(region_data)
+   
+  #output$heat <- renderPlotly({
+  # region_data <- gs_read(outputsheet, ws = worksheet())
+  #plot_ly(x = region_data, y = region_data)
+  #})
+  
+  #  output$x2HeatMap <- renderCondformat(condformat()
+  
+  #  )
   
   #cat(file=stderr(), "entered server", "\n")
   #selectedRegion <- reactive(input$region)
@@ -69,6 +110,10 @@ server <- function(input, output) {
   #cat(file=stderr(), "successful datatable render", "\n")
   #datatable(gs_read_csv(outputsheet, ws = input$region))
   #  })
+  
+  #plotlyOutput("heatmap")
+  
+  
   
 }
 
