@@ -10,6 +10,7 @@ library(plotly)
 library(heatmaply)
 library(shinyHeatmaply)
 library(condformat)
+library(markdown)
 suppressMessages(library(dplyr))
 
 
@@ -37,23 +38,18 @@ ui <- fluidPage(
     sidebarPanel(
       selectInput("region", "Region:", choices=gs_ws_ls(outputsheet)),
       hr(),
-      helpText("Select a region to evaluate its models.")
-      ######
+      helpText("Select a region to evaluate its models."),
+      plotOutput("plot", height = "800px")
     ),
     
     # Show a table of statistical values
     mainPanel(
       dataTableOutput("x1Table"),
       #plotlyOutput("heatmap")
-      plotlyOutput("heatmapyo")
-      # {{{{{{{{{{{{{}}}}}}}}}}}}}      
-      #condformatOutput("formattedTable")
-      #cat(file=stderr(), "main panel successful", "\n")
-      #      condformatOutput("x2HeatMap")
-      #plotlyOutput("heat")
-      
-      #heatmaply(region_data)
-      # {{{{{{{{{{{{{}}}}}}}}}}}}}   
+      #plotlyOutput("heatmapyo")
+      #      plotOutput("heatmapPlot", height = "800px"),
+
+      print("plotOutput passed")
     )
   )
 )
@@ -68,50 +64,38 @@ server <- function(input, output) {
   
   
   
-  output$x1Table <- renderDataTable({
-    #output$formattedTable <- renderCondformat({
+    output$x1Table <- renderDataTable({
+      #output$formattedTable <- renderCondformat({
+      region_data <- gs_read(outputsheet, ws = worksheet())
+      datatable(t(region_data))
+  #as.matrix(region_data)
+    })
+  
+  #  output$x2Heatmap <- renderPlot({
+  #    print("entered heatmap generator")
+  #      mtscaled <- as.matrix(type.convert(testdata))
+  #      heatmap(mtscaled)
+  #    print("completed heatmap generator")
+  #  })
+  
+  output$plot <- renderPlot({
     region_data <- gs_read(outputsheet, ws = worksheet())
-    datatable(t(region_data))
-    #datatable(condformat(t(region_data)) +
-    #       rule_fill_gradient(pcc)
-    #        )
-    #renderCondformat(condformat(datatable(t(region_data))))
+    rownames(region_data) <- region_data[,1]
+    colnames(region_data) <- region_data[1,]
+    region_data <- region_data
+    mtscaled <- as.matrix(type.convert(region_data))
+    heatmap(mtscaled, Colv=NA, Rowv=NA)
   })
   
-  #  output$heatmap <- renderPlotly({
-  #   region_data <- gs_read(outputsheet, ws = worksheet())
-  #    heatmaply(as.matrix(t(region_data)))
-  # })
+  output$plot2 <- renderPlot({
+    plot(head(cars, input$n), main="Foo")
+  }, bg = "#F5F5F5")
   
-#  output$heatmapyo <- plot_ly(z=region_data, type = "heatmap")
+  #  output$x3heatmap <- 
   
-#  heatmap(region_data)
- 
-  as.matrix(region_data)
-   
-  #output$heat <- renderPlotly({
-  # region_data <- gs_read(outputsheet, ws = worksheet())
-  #plot_ly(x = region_data, y = region_data)
-  #})
+  ### output$heatmapyo <- plot_ly(z=as.matrix(type.convert(testdata)), type = "heatmap")
   
-  #  output$x2HeatMap <- renderCondformat(condformat()
-  
-  #  )
-  
-  #cat(file=stderr(), "entered server", "\n")
-  #selectedRegion <- reactive(input$region)
-  #  regionalData <- reactive({
-  #    gs_read(outputsheet, ws = input$region)
-  #  })
-  #cat(file=stderr(), "data read", "\n")
-  #  output$x1Table <- renderDataTable({
-  #cat(file=stderr(), "entered render", "\n")
-  #    datatable(regionalData)
-  #cat(file=stderr(), "successful datatable render", "\n")
-  #datatable(gs_read_csv(outputsheet, ws = input$region))
-  #  })
-  
-  #plotlyOutput("heatmap")
+  #  heatmap(region_data)
   
   
   
