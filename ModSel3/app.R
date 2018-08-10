@@ -45,84 +45,38 @@ ui <- fluidPage(
     
     # Show a table of statistical values
     mainPanel(
-      dataTableOutput("x1Table"),
-      #plotlyOutput("heatmap")
-      #plotlyOutput("heatmapyo")
-      #      plotOutput("heatmapPlot", height = "800px"),
-
-      print("plotOutput passed")
+      dataTableOutput("x1Table")
     )
   )
 )
 
 #################################################
-# Define server logic required to draw a histogram
+# Define server logic required to generate table and heatmap
 server <- function(input, output) {
-  #  outputsheet <- gs_title("output")
   worksheet <- reactive({
     input$region
   })
   
+  output$x1Table <- renderDataTable({
+    region_data <- gs_read(outputsheet, ws = worksheet())
+    datatable(t(region_data))
+  })
   
-  
-    output$x1Table <- renderDataTable({
-      #output$formattedTable <- renderCondformat({
-      region_data <- gs_read(outputsheet, ws = worksheet())
-      datatable(t(region_data))
-  #as.matrix(region_data)
-    })
-  
-  #  output$x2Heatmap <- renderPlot({
-  #    print("entered heatmap generator")
-  #      mtscaled <- as.matrix(type.convert(testdata))
-  #      heatmap(mtscaled)
-  #    print("completed heatmap generator")
-  #  })
-  
-    output$plot <- renderPlot({
-      region_data <- as.data.frame(gs_read(outputsheet, ws = worksheet()))
-      print("current row names:")
-      print(rownames(region_data))
-      print("Want the row names to be:")
-      print(region_data[,1])
-      print("current column names:")
-      print(colnames(region_data))
-          print("Want the column names to be:")
-          print(as.character(region_data[1,-1]))
-      rownames(region_data) <- region_data[,1]
-          colnames(region_data) <- region_data[1,]
-      print("new row names:")
-      print(rownames(region_data))
-      print("new col names:")
-      print(colnames(region_data))
-      region_data <- region_data[-1,-1]
-      print("final table for processing:")
-      print(region_data)
-      mtscaled <- as.matrix(type.convert(region_data))
-      print(mtscaled)
-      mtscaled[2,] <- mtscaled[2,] * (-1)
-      mtscaled[3,] <- mtscaled[3,] * (-1)
-  #    print("mtscaled row 2")
- #     print(mtscaled[2])
-         print(mtscaled)
-      palette <- colorRampPalette(brewer.pal(11,"RdYlGn"))(100)
-         heatmap(mtscaled, Colv=NA, Rowv=NA, col = palette)
-     
-         # my_palette <- colorRampPalette(c("red", "yellow", "green")) (n=299)
-         #heatmap.2(mtscaled, Colv = NA, Rowv = NA, col=my_palette)
-    })
+  output$plot <- renderPlot({
+    region_data <- as.data.frame(gs_read(outputsheet, ws = worksheet()))
+    rownames(region_data) <- region_data[,1]
+    colnames(region_data) <- region_data[1,]
+    region_data <- region_data[-1,-1]
+    mtscaled <- as.matrix(type.convert(region_data))
+    mtscaled[2,] <- mtscaled[2,] * (-1)
+    mtscaled[3,] <- mtscaled[3,] * (-1)
+    palette <- colorRampPalette(brewer.pal(11,"RdYlGn"))(100)
+    heatmap(mtscaled, Colv=NA, Rowv=NA, col = palette)
+  })
   
   output$plot2 <- renderPlot({
     plot(head(cars, input$n), main="Foo")
   }, bg = "#F5F5F5")
-  
-  #  output$x3heatmap <- 
-  
-  ### output$heatmapyo <- plot_ly(z=as.matrix(type.convert(testdata)), type = "heatmap")
-  
-  #  heatmap(region_data)
-  
-  
   
 }
 
