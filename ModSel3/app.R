@@ -79,10 +79,24 @@ server <- function(input, output) {
   #  })
   
   output$plot <- renderPlot({
-    region_data <- gs_read(outputsheet, ws = worksheet())
+    region_data <- as.data.frame(gs_read(outputsheet, ws = worksheet()))
+    print("current row names:")
+    print(rownames(region_data))
+    print("Want the row names to be:")
+    print(region_data[,1])
+    print("current column names:")
+    print(colnames(region_data))
+#    print("Want the column names to be:")
+#    print(as.character(region_data[1,-1]))
     rownames(region_data) <- region_data[,1]
-    colnames(region_data) <- region_data[1,]
-    region_data <- region_data
+#    colnames(region_data) <- region_data[1,-1]
+    print("new row names:")
+    print(rownames(region_data))
+    print("new col names:")
+    print(colnames(region_data))
+    region_data <- region_data[,-1]
+    print("final table for processing:")
+    print(region_data)
     mtscaled <- as.matrix(type.convert(region_data))
     heatmap(mtscaled, Colv=NA, Rowv=NA)
   })
