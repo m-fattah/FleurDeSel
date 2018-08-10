@@ -80,16 +80,20 @@ server <- function(input, output) {
   
   output$plot <- renderPlot({
     region_data <- as.data.frame(gs_read(outputsheet, ws = worksheet()))
+#    print("region_data[-1,]:")
+#    print(region_data)
+    print("region data:")
+    print(region_data)
     print("current row names:")
     print(rownames(region_data))
     print("Want the row names to be:")
     print(region_data[,1])
     print("current column names:")
     print(colnames(region_data))
-#    print("Want the column names to be:")
-#    print(as.character(region_data[1,-1]))
+    print("Want the column names to be:")
+    print(as.character(region_data[1,-1]))
     rownames(region_data) <- region_data[,1]
-#    colnames(region_data) <- region_data[1,-1]
+    colnames(region_data) <- region_data[1,-1]
     print("new row names:")
     print(rownames(region_data))
     print("new col names:")
