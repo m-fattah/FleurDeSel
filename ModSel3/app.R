@@ -10,6 +10,7 @@ library(plotly)
 library(heatmaply)
 library(shinyHeatmaply)
 library(condformat)
+library(RColorBrewer)
 library(markdown)
 suppressMessages(library(dplyr))
 
@@ -104,7 +105,11 @@ server <- function(input, output) {
   #    print("mtscaled row 2")
  #     print(mtscaled[2])
          print(mtscaled)
-      heatmap(mtscaled, Colv=NA, Rowv=NA)
+      palette <- colorRampPalette(brewer.pal(11,"RdYlGn"))(100)
+         heatmap(mtscaled, Colv=NA, Rowv=NA, col = palette)
+     
+         # my_palette <- colorRampPalette(c("red", "yellow", "green")) (n=299)
+         #heatmap.2(mtscaled, Colv = NA, Rowv = NA, col=my_palette)
     })
   
   output$plot2 <- renderPlot({
