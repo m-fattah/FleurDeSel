@@ -10,6 +10,7 @@ library(plotly)
 library(heatmaply)
 library(shinyHeatmaply)
 library(condformat)
+library(lubridate)
 library(RColorBrewer)
 library(markdown)
 suppressMessages(library(dplyr))
@@ -23,9 +24,56 @@ gs_ls()
 
 # get google sheet
 outputsheet <- gs_title("output")
+correlationSheet <- gs_title("correlations")
+print("Correlations Sheet:")
+baySheet <- gs_read(correlationSheet, ws = "Bay")
 
 # list all worksheets in google sheet
+print("All output worksheets:")
 print(gs_ws_ls(outputsheet))
+
+# test that one column can be searched as a vector
+print("Bay:")
+print(baySheet)
+print(baySheet$Date)
+startDate <- Sys.Date()
+month(startDate) <- month(startDate) - 12
+day(startDate) <- 1
+print("Start Date:")
+print(startDate)
+print("Reformatted Dates:")
+print(mdy(baySheet$Date))
+print("Matching Date Index:")
+print(which(mdy(baySheet$Date) == startDate))
+
+#################################################
+# Function for outputing a variable number of data tables
+
+#find_index <- function(modelName){
+#  index <- which(correlations.long$Date == modelName)
+#  return(index)
+#}
+
+#getDataFrame <- function(modelName) {
+#  
+#}
+
+#tableize <- function(selectedModels) {
+  
+#  tables <- list() # create a list to hold all tables
+  
+#  for (selectedModel in selectedModels) { # go through all possible values of variables
+#    table <- getDataFrame(selectedModel, arg2, ...)
+#    tables[[as.character(selectedModel)]] <- 
+#      # save table into slot in created list
+#      # print table as HTML with additional formatting options
+#      print(xtable(table, caption=paste("Selected Model:", selectedModel)),
+#            type="html",
+#            html.table.attributes='class="data table table-bordered table-condensed"',
+#            caption.placement="top")
+#  }
+#  return(lapply(tables, paste)) # return HTML tables pasted together
+#}
 
 #################################################
 # Define UI
@@ -47,6 +95,10 @@ ui <- fluidPage(
     mainPanel(
       dataTableOutput("x1Table")
     )
+    
+#    fluidRow(
+#
+#    )
   )
 )
 
@@ -77,6 +129,10 @@ server <- function(input, output) {
   output$plot2 <- renderPlot({
     plot(head(cars, input$n), main="Foo")
   }, bg = "#F5F5F5")
+  
+#  output$correlationsDataTables <- renderUI({
+#    tableize(rownames(input$x1Table_rows_selected))
+#  })
   
 }
 
