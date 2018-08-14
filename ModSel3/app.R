@@ -15,6 +15,7 @@ library(RColorBrewer)
 library(markdown)
 suppressMessages(library(dplyr))
 
+MONTHS_PRIOR <- 12
 
 #################################################
 # Google Sheet Preparation
@@ -36,15 +37,53 @@ print(gs_ws_ls(outputsheet))
 print("Bay:")
 print(baySheet)
 print(baySheet$Date)
-startDate <- Sys.Date()
-month(startDate) <- month(startDate) - 12
-day(startDate) <- 1
-print("Start Date:")
-print(startDate)
+#startDate <- Sys.Date()
+#month(startDate) <- month(startDate) - 12
+#day(startDate) <- 1
+#print("Start Date:")
+#print(startDate)
 print("Reformatted Dates:")
 print(mdy(baySheet$Date))
 print("Matching Date Index:")
 print(which(mdy(baySheet$Date) == startDate))
+
+
+#################################################
+# Functions for pulling from Correlations sheet
+
+# Method: findStartDate ??? Returns the desired date from a certain number of months ago
+findStartDate <- function(monthsPrior) {
+  startDate <- Sys.Date()
+  month(startDate) <- month(startDate) - monthsPrior
+  day(startDate) <- 1
+  return(startDate)
+}
+
+# Method: findIndex ??? Returns the index of a value within a given data frame
+findIndex <- function(dfInput, valueInput) {
+  index <- which(dfInput == valueInput)
+  return(index)
+}
+
+# Method: getDataFrame - Returns a subset of a given model's data, limited to the given dates
+getDataFrame <- function(modelDataColumn, startRowIndex) {
+  return(modelDataColumn[startRowIndex, startRowIndex + 11])
+}
+
+# Method: getModelSheetName - Returns the name of the model formatted like the Google Sheets column names
+getModelSheetName <- function(modelName) {
+  return(cat("modelarrivals_", modelName, "arrivals"))
+}
+
+# Method: addOtherCorrelationsStats - 
+
+
+
+
+
+
+
+
 
 #################################################
 # Function for outputing a variable number of data tables
@@ -131,6 +170,20 @@ server <- function(input, output) {
   }, bg = "#F5F5F5")
   
 #  output$correlationsDataTables <- renderUI({
+  
+#### must go into the tableize function because modelName is a variable from a vector
+#
+#  currentSheet <- gs_read(correlationSheet, ws = worksheet())
+#  startDate <- findStartDate(MONTHS_PRIOR)
+#  startDateRowIndex <- findIndex(mdy(currentSheet$Date), startDate)
+#  dates <- getDataFrame(currentSheet$Date, startDateRowIndex)
+#  actualArrivals <- getDataFrame(currentSheet$actualarrivals, startDateRowIndex)
+#  modelSheetName <- getModelSheetName(modelName)
+#  modelArrivals <- getDataFrame(currentSheet$modelSheetName, startDateRowIndex)
+#
+####
+  
+  
 #    tableize(rownames(input$x1Table_rows_selected))
 #  })
   
